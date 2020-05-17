@@ -1,0 +1,17 @@
+apiVersion: v1
+appVersion: 1.0.0
+# kubeVersion: A SemVer range of compatible Kubernetes versions (optional)
+description: Flask Nginx Base Api packaged as Helm
+# home: The URL of this project's home page (optional)
+# icon: A URL to an SVG or PNG image to be used as an icon (optional).
+# keywords:
+#   - A list of keywords about this project (optional)
+maintainers: # (optional)
+  - name: Olaf Marangone
+    email: olmighty99@gmail.com
+#   url: A URL for the maintainer (optional for each maintainer)
+name: flask-nginx-celery
+version: 0.0.5  # ChartVersion
+# sources:
+#   - A list of URLs to source code for this project (optional)
+

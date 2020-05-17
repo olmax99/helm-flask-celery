@@ -1,0 +1,4 @@
+Dockerfile
+.dockerignore
+.pytest_cache/**/*
+.pytest_cache

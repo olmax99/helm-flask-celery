@@ -1,0 +1,99 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "basechart.name" . }}-worker
+  labels:
+    app.kubernetes.io/name: {{ include "basechart.name" . }}-worker
+    helm.sh/chart: {{ include "basechart.chart" . }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.dev.io/role: worker
+spec:
+  replicas: {{ .Values.worker.replicaCount }}
+  selector:
+    matchLabels:
+      app.kubernetes.io/name: {{ include "basechart.name" . }}-worker
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.dev.io/role: worker
+  template:
+    metadata:
+      labels:
+        app.kubernetes.io/name: {{ include "basechart.name" . }}-worker
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.dev.io/role: worker
+    spec:
+      initContainers:
+        - name: wait-for-redis
+          image: {{ .Values.webapi.initContainerImage }}
+          command:
+            - 'sh'
+            - '-c'
+            - >
+              until nc -z -w 2 {{ template "redis.hostname" . }} 6379 && echo redis ok;
+                do sleep 2;
+              done
+      containers:
+        - name: {{ .Chart.Name }}-worker
+          image: {{ .Values.worker.image }}
+          imagePullPolicy: {{ .Values.worker.pullPolicy }}
+          cmd:
+            - /bin/bash
+            - -c
+          args:
+            {{- range .Values.worker.extraArgs }}
+            - {{ . }}
+            {{- end }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "basechart.name" . }}
+            - secretRef:
+                name: {{ template "basechart.name" . }}
+#          volumeMounts:
+#            - mountPath: {{ .Values.webapi.sharedStorePath }}
+#              name: media-path
+          {{- if .Values.worker.probe }}
+          livenessProbe:
+            exec:
+              # bash is needed to replace the environment variable
+              command: [
+                "/bin/bash",
+                "-c",
+                "celery inspect ping -A tasks.app -d celery@$HOSTNAME"
+              ]
+            initialDelaySeconds: 30  # startup takes some time
+            periodSeconds: 60  # default is quite often and celery uses a lot cpu/ram then.
+            timeoutSeconds: 10  # default is too low
+          readinessProbe:
+            exec:
+              # bash is needed to replace the environment variable
+              command: [
+                "/bin/bash",
+                "-c",
+                "celery inspect ping -A tasks.app -d celery@$HOSTNAME"
+              ]
+            initialDelaySeconds: 30  # startup takes some time
+            periodSeconds: 60  # default is quite often and celery uses a lot cpu/ram then.
+            timeoutSeconds: 10  # default is too low
+          {{- end }}
+          resources:
+            {{- toYaml .Values.worker.resources | nindent 12 }}
+      {{- with .Values.worker.nodeSelector }}
+      nodeSelector:
+        {{- toYaml . | nindent 8 }}
+      {{- end }}
+    {{- with .Values.worker.affinity }}
+      affinity:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+    {{- with .Values.worker.tolerations }}
+      tolerations:
+        {{- toYaml . | nindent 8 }}
+    {{- end }}
+#      volumes:
+#        - name: shared-store-path
+#        {{- if .Values.webapi.sharedMount.enabled }}
+#          persistentVolumeClaim:
+#            claimName: {{ if .Values.webapi.sharedMount.existingClaim }}{{ .Values.webapi.sharedMount.existingClaim }}{{- else }}{{ template "basechart.fullname" . }}{{- end }}
+#        {{- else }}
+#          emptyDir: {}
+#        {{- end }}

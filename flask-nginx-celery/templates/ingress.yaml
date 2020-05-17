@@ -1,0 +1,41 @@
+{{- if .Values.webapi.ingress.enabled -}}
+{{- $serviceName := include "basechart.name" . -}}
+{{- $servicePortWeb := .Values.webapi.service.externalPort -}}
+apiVersion: extensions/v1beta1
+kind: Ingress
+# TODO: In _helpers define "skaffold-helm.fullname" and "skaffold-helm.name"
+metadata:
+  name: {{ template "basechart.name" . }}
+  namespace: {{ .Values.webapi.ingress.namespace }}
+  labels:
+    app: {{ template "basechart.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+  annotations:
+    {{- range $key, $value := .Values.webapi.ingress.annotations }}
+      {{ $key }}: {{ $value | quote }}
+    {{- end }}
+spec:
+  rules:
+    {{- range $host := .Values.webapi.ingress.hosts }}
+    - host: {{ $host }}
+      http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: {{ $serviceName }}
+              servicePort: {{ $servicePortWeb }}
+    {{- end -}}
+    {{- if .Values.worker.flower.enabled }}
+    {{- range $host := .Values.worker.flower.ingress.hosts }}
+    - host: {{ $host }}
+      http:
+        paths:
+          - path: /*
+            backend:
+              serviceName: {{ $serviceName }}-flower
+              servicePort: 5555
+    {{- end -}}
+    {{- end -}}
+{{- end -}}

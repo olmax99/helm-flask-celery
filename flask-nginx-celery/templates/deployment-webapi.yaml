@@ -1,0 +1,83 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ template "basechart.name" . }}
+  labels:
+    app: {{ template "basechart.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+spec:
+  selector:
+    matchLabels:
+      app: {{ template "basechart.name" . }}
+      release: {{ .Release.Name }}
+  replicas: {{ .Values.webapi.replicaCount }}
+  template:
+    metadata:
+      labels:
+        app: {{ template "basechart.name" . }}
+        release: {{ .Release.Name }}
+    spec:
+      initContainers:
+        - name: wait-for-redis
+          image: {{ .Values.webapi.initContainerImage }}
+          command:
+            - 'sh'
+            - '-c'
+            - >
+              until nc -z -w 2 {{ template "redis.hostname" . }} 6379 && echo redis ok;
+                do sleep 2;
+              done
+      containers:
+        - name: {{ .Chart.Name }}-app
+          image: {{ .Values.webapi.image }}
+          imagePullPolicy: {{ .Values.webapi.pullPolicy }}
+          envFrom:
+            - configMapRef:
+                name: {{ template "basechart.name" . }}
+            - secretRef:
+                name: {{ template "basechart.name" . }}
+          cmd:
+            - /bin/bash
+            - -c
+          args:
+            {{-  range .Values.webapi.extraArgs }}
+              - {{ . }}
+            {{- end }}
+          ports:
+            - containerPort: 5000
+            # volumeMounts:
+            #   - mountPath: /usr/share/nginx/html/
+            #     name: static-assets
+          resources:
+{{ toYaml .Values.webapi.resources | indent 12 }}
+        {{- if .Values.webapi.probe.enabled }}
+          livenessProbe:
+            initialDelaySeconds: 30
+            periodSeconds: 10
+            timeoutSeconds: 5
+            successThreshold: 1
+            failureThreshold: 5
+            httpGet:
+              path: {{ .Values.webapi.probe.path }}
+              port: {{ .Values.webapi.probe.port }}
+          readinessProbe:
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 10
+            successThreshold: 1
+            failureThreshold: 5
+            httpGet:
+              path: {{ .Values.webapi.probe.path }}
+              port: {{ .Values.webapi.probe.port }}
+        {{- end }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+      # volumes:
+      #   - name: static-assets
+      #     configMap:
+      #       name: {{ template "basechart.name" . }}
+      #       defaultMode: 420

@@ -1,0 +1,23 @@
+{{- if .Values.worker.flower.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ template "basechart.name" . }}-flower
+  labels:
+    app.kubernetes.io/name: {{ template "basechart.name" . }}-flower
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.dev.io/role: flower
+spec:
+  type: {{ .Values.worker.flower.service.type }}
+  ports:
+    - port: {{ .Values.worker.flower.service.externalPort }}
+      targetPort: {{ .Values.worker.flower.service.internalPort }}
+      protocol: TCP
+      name: {{ .Values.worker.flower.service.name }}
+  selector:
+    app.kubernetes.io/name: {{ include "basechart.name" . }}-flower
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.dev.io/role: flower
+{{- end }}

@@ -1,0 +1,51 @@
+AWSTemplateFormatVersion: "2010-09-09"
+Description: Sensorlogger api development resources for local builds or testing
+
+Parameters:
+
+  HelmchartBucket:
+    Description: >-
+      Helmchart S3 repo for all datalogger api related resources (might hold other projects' Helm charts
+      in the future)
+    Type: String
+
+Resources:
+
+  HelmchartRepo:
+    Type: AWS::S3::Bucket
+    DeletionPolicy: Retain
+    Properties:
+      BucketName: !Ref HelmchartBucket
+      AccessControl: Private
+      BucketEncryption:
+        ServerSideEncryptionConfiguration:
+          - ServerSideEncryptionByDefault:
+              SSEAlgorithm: AES256
+      PublicAccessBlockConfiguration:
+        BlockPublicAcls: True
+        BlockPublicPolicy: True
+        IgnorePublicAcls: True
+        RestrictPublicBuckets: True
+
+#  HelmchartAccess:
+#    Type: AWS::S3::BucketPolicy
+#    Properties:
+#      Bucket: !Ref HelmchartRepo
+#      PolicyDocument:
+#        Version: "2012-10-17"
+#        Statement:
+#        - Sid: "AllowListObjects"
+#          Action:
+#            - "s3:ListBucket"
+#          Effect: "Allow"
+#          Resource: !Sub "arn:aws:s3:::${HelmchartRepo}"
+#          # TODO: Set principal to specific users or CI
+#          Principal: "*"
+#        - Sid: "AllowObjectsFetchAndCreate"
+#          Action:
+#            - "s3:PutObject"
+#            - "s3:GetObject"
+#            - "s3:DeleteObject"
+#          Effect: "Allow"
+#          Resource: !Sub "arn:aws:s3:::${HelmchartRepo}/*"
+#          Principal: "*"

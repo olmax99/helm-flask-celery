@@ -1,0 +1,17 @@
+dependencies:
+  - name: redis
+    version: 10.4.2
+    tags:
+      - flask-nginx-celery
+      - memory-storage
+    repository: s3://olmax-helmchart-001-repo-eu-central-1/charts
+    alias: redis
+    condition: redis.enabled
+
+#  - name: postgresql
+#    version: 7.4.0
+#    tags:
+#    - postgresql-database
+#    repository: s3://my_organization-helmchart-001-repo-eu-central-1/charts
+#    alias: postgresql
+#    condition: postgresql.enabled

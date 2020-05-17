@@ -1,0 +1,24 @@
+[[source]]
+name = "pypi"
+url = "https://pypi.org/simple"
+verify_ssl = true
+
+[dev-packages]
+auto-changelog = "*"
+pytest = "*"
+
+[packages]
+flask = "*"
+flask-redis = "*"
+ijson = "*"
+requests = "*"
+requests-mock = {extras = ["fixture"],version = "*"}
+pytest-mock = "*"
+celery = "*"
+amqp = "*"
+kombu = "*"
+billiard = "*"
+flask-restx = "*"
+
+[requires]
+python_version = "3.6"

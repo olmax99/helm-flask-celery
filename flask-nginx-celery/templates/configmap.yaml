@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: {{ template "basechart.name" . }}
+  labels:
+    app: {{ template "basechart.name" . }}
+    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    release: {{ .Release.Name }}
+    heritage: {{ .Release.Service }}
+data:
+{{- range $index, $index_value := .Values.envValues }}
+  {{ $index }}: {{ $index_value | quote }}
+{{- end }}
