@@ -1,7 +1,7 @@
 # Flask-Nginx-Base-Api
 
-This project is a blue print for building any Rest API project using Flask and Nginx.
-It is assuming a K8s deployment in an AWS Kops cluster using Helm.
+This project can be used as a template for building any Rest API project using Flask and 
+Nginx. It is assuming a K8s deployment in an AWS Kops cluster using Helm.
 
 ---
 
