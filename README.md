@@ -140,7 +140,7 @@ data:
 **NOTE:** It is recommended to match the `values.yaml` with a `values-stage.yaml`. In any case the
 `values.yaml` corresponds to the "fall-back" or *default* configuration.
 
-Provide values for deploying `flask-nginx-celery`. This is an example for a development `values.yaml`
+Provide values for deploying `flask-nginx-celery`. This is an example for `values-dev.yaml`
 file:
 ```
 secretValues:
@@ -225,7 +225,7 @@ $ kubectl get all       <= node_port
 
 ```
 
-Open the Flaskapi via browser at `https://<minikube_ip>:<node_port>`
+Open the Flaskapi via browser at `http://<minikube_ip>:<node_port>`
 
 #### ii. Skaffold for interactive Development
 
@@ -258,7 +258,7 @@ webapi:
   image: local/webapiservice:0.3
   initContainerImage: "alpine:3.6"
   pullPolicy: IfNotPresent
-  nameOverride: baseapi-flask
+  nameOverride: baseapi-dev
   # -c will tell supervisord to start an alternative supervisord.conf, which
   # in this case will just keep the docker alive instead of running nginx
   extraArgs:
@@ -299,11 +299,11 @@ Using *Skaffold* this is the default option.
 Execute the tests for the `webapiservice` and the `workerservice` respectively:
 ```
 # WEBAPISERVICE
-$ kubectl -n olmax-baseapi-0-0-1 exec baseapi-flask-6dff8fdbc6-44njz -- pytest
+$ kubectl -n olmax-baseapi-0-0-1 exec baseapi-dev-6dff8fdbc6-44njz -- pytest
 
 
 # WORKERSERVICE
-$ kubectl -n skaffold exec -ti baseapi-flask-worker-7667dd74c9-t6k4v -- python -m pytest /usr/src/queue/
+$ kubectl -n olmax-baseapi-0-0-1 -ti baseapi-dev-worker-7667dd74c9-t6k4v -- python -m pytest /usr/src/queue
 
 ```
 

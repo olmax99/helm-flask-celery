@@ -20,7 +20,7 @@ target: help
 
 help:
 	@echo "$(YELLOW)$(BOLD)[INFO] ...::: WELCOME :::...$(RESET)"
-	head -n 5 ./LICENCE && tail -n 2 ./LICENCE && printf "\n\n"
+	head -n 5 ./LICENCE.md && tail -n 2 ./LICENCE.md && printf "\n\n"
 	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
 
 chart-repo: _set-env ## Create an s3 Helm repo Bucket - see Readme.md for further instructions
