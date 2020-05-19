@@ -1,23 +1,26 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: {{ template "basechart.name" . }}
+  name: {{ template "basechart.name" . }}-web
   labels:
-    app: {{ template "basechart.name" . }}
-    chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
-    release: {{ .Release.Name }}
-    heritage: {{ .Release.Service }}
+    app.kubernetes.io/name: {{ include "basechart.name" . }}-web
+    helm.sh/chart: {{ .Chart.Name }}-{{ .Chart.Version | replace "+" "_" }}
+    app.kubernetes.io/instance: {{ .Release.Name }}
+    app.kubernetes.io/managed-by: {{ .Release.Service }}
+    app.dev.io/role: web
 spec:
   selector:
     matchLabels:
-      app: {{ template "basechart.name" . }}
-      release: {{ .Release.Name }}
+      app.kubernetes.io/name: {{ include "basechart.name" . }}-web
+      app.kubernetes.io/instance: {{ .Release.Name }}
+      app.dev.io/role: web
   replicas: {{ .Values.webapi.replicaCount }}
   template:
     metadata:
       labels:
-        app: {{ template "basechart.name" . }}
-        release: {{ .Release.Name }}
+        app.kubernetes.io/name: {{ include "basechart.name" . }}-web
+        app.kubernetes.io/instance: {{ .Release.Name }}
+        app.dev.io/role: web
     spec:
       initContainers:
         - name: wait-for-redis
@@ -30,7 +33,7 @@ spec:
                 do sleep 2;
               done
       containers:
-        - name: {{ .Chart.Name }}-app
+        - name: {{ .Chart.Name }}-web
           image: {{ .Values.webapi.image }}
           imagePullPolicy: {{ .Values.webapi.pullPolicy }}
           envFrom:

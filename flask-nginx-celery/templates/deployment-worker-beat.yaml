@@ -3,7 +3,7 @@ kind: Deployment
 metadata:
   name: {{ include "basechart.name" . }}-beat
   labels:
-    app.kubernetes.io/name: {{ include "basechart.name" . }}-worker
+    app.kubernetes.io/name: {{ include "basechart.name" . }}-beat
     helm.sh/chart: {{ include "basechart.chart" . }}
     app.kubernetes.io/instance: {{ .Release.Name }}
     app.kubernetes.io/managed-by: {{ .Release.Service }}

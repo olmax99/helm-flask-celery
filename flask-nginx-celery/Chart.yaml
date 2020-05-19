@@ -11,7 +11,7 @@ maintainers: # (optional)
     email: olmighty99@gmail.com
 #   url: A URL for the maintainer (optional for each maintainer)
 name: flask-nginx-celery
-version: 0.0.5  # ChartVersion
+version: 0.0.6  # ChartVersion
 # sources:
 #   - A list of URLs to source code for this project (optional)
 
