@@ -3,9 +3,6 @@ import pytest
 # Needed for celery_fixture to get registered - https://github.com/celery/celery/issues/4851
 from celery.contrib.testing.tasks import ping
 
-# You should override the celery_app fixture to use your app.
-# See https://github.com/celery/celery/blob/master/celery/contrib/pytest.py#L164.
-
 
 @pytest.fixture(scope='session')
 def celery_config():
@@ -15,6 +12,18 @@ def celery_config():
     }
 
 
+@pytest.fixture(scope='session')
+def celery_enable_logging():
+    return True
+
+
+@pytest.fixture(scope='session')
+def celery_worker_pool():
+    return 'solo'
+
+
+# You should override the celery_app fixture to use your app.
+# See https://github.com/celery/celery/blob/master/celery/contrib/pytest.py#L164.
 @pytest.fixture()
 def celery_app():
     from app.celery_conn import make_celery
