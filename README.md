@@ -244,14 +244,17 @@ $ AWS_PROFILE=<my_profile> skaffold dev --default-repo <ecr_S3_repo> --kube-cont
 
 ### i. Define Testing Environment
 
-**NOTE:** The testing environment is very close to staging except that the webservice will
-not be started automatically, as pytest will build the clients, and all `*-deployment` 
+**NOTE:** The testing environment is very close to staging except that the webservice 
+will not be started automatically, as pytest will build the clients, and all `*-deployment` 
 containers are running in *keep-alive* mode.
 
-Create `flask-nginx-celery/values-dev.yaml`
+**NOTE:** The `values-dev.yaml` environment will run the webserver, workers, and all 
+others.
+
+Create `flask-nginx-celery/values-test.yaml`
 ```
 envValues:
-  PYTHONPATH: "/usr/src/queue"
+  PYTHONPATH: "/usr/src/queue"          <-- ENABLING PYTEST TO IMPORT FROM WORKER MODULES
 
 webapi:
   replicaCount: 1
@@ -289,7 +292,10 @@ beat:
 
 ### ii. Lauch Testing Environment
 
-See [Step 6: Deploy Helm Chart](#step-6:-deploy-helm-chart). Ensure that `values-dev.yaml` is selected.
+**NOTE:** For debugging and testing in Skaffold always ensure that the most recent
+docker images are present in the remote container registry.
+
+See [Step 6: Deploy Helm Chart](#step-6:-deploy-helm-chart). Ensure that `values-test.yaml` is selected.
 Using *Skaffold* this is the default option.
 
 ### iii. Run the Tests
@@ -299,14 +305,13 @@ Using *Skaffold* this is the default option.
 Execute the tests for the `webapiservice` and the `workerservice` respectively:
 ```
 # WEBAPISERVICE
-$ kubectl -n olmax-baseapi-0-0-1 exec baseapi-dev-6dff8fdbc6-44njz -- pytest
+$ kubectl -n olmax-baseapi-0-0-1 exec baseapi-test-6dff8fdbc6-44njz -- pytest
 
 
 # WORKERSERVICE
-$ kubectl -n olmax-baseapi-0-0-1 -ti baseapi-dev-worker-7667dd74c9-t6k4v -- python -m pytest /usr/src/queue
+$ kubectl -n olmax-baseapi-0-0-1 exec -ti baseapi-test-worker-7667dd74c9-t6k4v -- python -m pytest /usr/src/queue
 
 ```
-
 
 
 ---
@@ -663,6 +668,8 @@ and Cloud Level [https://docs.aws.amazon.com/AWSEC2/latest/UserGuide//monitoring
 
 - Testing and Performance Reviews with Minikube [https://github.com/kubernetes-for-developers/kfd-flask/blob/master/src/exampleapp.py](https://github.com/kubernetes-for-developers/kfd-flask/blob/master/src/exampleapp.py)
   * [https://github.com/opentracing-contrib/python-flask](https://github.com/opentracing-contrib/python-flask)
+
+- Implement Build structure tests with Skaffold [https://github.com/GoogleContainerTools/container-structure-test#command-tests](https://github.com/GoogleContainerTools/container-structure-test#command-tests)
  
 
 ---
