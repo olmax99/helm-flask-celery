@@ -41,6 +41,9 @@ spec:
                 name: {{ template "basechart.name" . }}
             - secretRef:
                 name: {{ template "basechart.name" . }}
+          env:
+          - name: PYTHONPATH
+            value: /usr/src/app
           cmd:
             - /bin/bash
             - -c

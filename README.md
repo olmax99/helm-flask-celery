@@ -304,12 +304,18 @@ Using *Skaffold* this is the default option.
 
 Execute the tests for the `webapiservice` and the `workerservice` respectively:
 ```
-# WEBAPISERVICE
-$ kubectl -n olmax-baseapi-0-0-1 exec baseapi-test-6dff8fdbc6-44njz -- pytest
+#------------------
+#   WEBAPISERVICE
+# -----------------
+$ kubectl -n olmax-baseapi-0-0-1 exec -ti baseapi-test-web-cb7d69b58-4r9bf -- coverage run -m pytest
+$ kubectl -n olmax-baseapi-0-0-1 exec -ti baseapi-test-web-cb7d69b58-4r9bf -- coverage report
 
+#------------------
+#   WORKERSERVICE
+#------------------
+$ kubectl -n olmax-baseapi-0-0-1 exec -ti baseapi-test-worker-7667dd74c9-t6k4v -- coverage run -m pytest /usr/src/queue
+$ kubectl -n olmax-baseapi-0-0-1 exec -ti baseapi-test-worker-7667dd74c9-t6k4v -- coverage report
 
-# WORKERSERVICE
-$ kubectl -n olmax-baseapi-0-0-1 exec -ti baseapi-test-worker-7667dd74c9-t6k4v -- python -m pytest /usr/src/queue
 
 ```
 

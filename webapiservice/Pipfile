@@ -19,6 +19,7 @@ amqp = "*"
 kombu = "*"
 billiard = "*"
 flask-restx = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.6"

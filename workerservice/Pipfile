@@ -23,6 +23,7 @@ boto3 = "*"
 pytest-cov = "*"
 pytest = "<=3.10.1"
 pytest-remotedata = "*"
+coverage = "*"
 
 [requires]
 python_version = "3.6"
