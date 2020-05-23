@@ -46,11 +46,10 @@ spec:
           envFrom:
             - configMapRef:
                 name: {{ template "basechart.name" . }}
+            - configMapRef:
+                name: {{ template "basechart.name" . }}-worker
             - secretRef:
                 name: {{ template "basechart.name" . }}
-          env:
-          - name: PYTHONPATH
-            value: /usr/src/queue
 #          volumeMounts:
 #            - mountPath: {{ .Values.webapi.sharedStorePath }}
 #              name: media-path

@@ -1,6 +1,6 @@
 dependencies:
   - name: redis
-    version: 10.4.2
+    version: 10.5.7
     tags:
       - flask-nginx-celery
       - memory-storage
