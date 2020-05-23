@@ -1,9 +1,13 @@
-# Flask-Nginx-Base-Api
+# Flask-Nginx Base Helm Deployment
 
-This project can be used as a template for building any Rest API project using Flask and 
-Nginx. It is assuming a K8s deployment in an AWS Kops cluster using Helm.
+This project can be used as a Helm template for building any Rest API project using Flask 
+and Nginx. It is assuming a K8s deployment in an AWS Kops cluster.
+
+**NOTE: The actual Flask Api project is a separate project. This project's webapiservice and**
+**workerservice are meant for demonstration purposes only.**
 
 ---
+
 
 ## Project Design
 
@@ -253,15 +257,14 @@ others.
 
 Create `flask-nginx-celery/values-test.yaml`
 ```
-envValues:
-  PYTHONPATH: "/usr/src/queue"          <-- ENABLING PYTEST TO IMPORT FROM WORKER MODULES
-
 webapi:
   replicaCount: 1
   image: local/webapiservice:0.3
   initContainerImage: "alpine:3.6"
   pullPolicy: IfNotPresent
   nameOverride: baseapi-dev
+  envValues:
+    PYTHONPATH: "/usr/src/queue"          <-- ENABLING PYTEST TO IMPORT FROM WORKER MODULES
   # -c will tell supervisord to start an alternative supervisord.conf, which
   # in this case will just keep the docker alive instead of running nginx
   extraArgs:
@@ -655,7 +658,7 @@ If set up correctly simply connect to the pod via:
 
 ## Where to go from here?
 
-- Upgrade to Python Version 3.8, Helm v3
+- Upgrade to Python Version 3.8, Docker base image Python:3.8-buster-slim, Helm v3, Skaffold (Helm v3), Celery 4.4.0 
 
 - Production level monitoring cluster [https://github.com/zerok/celery-prometheus-exporter](https://github.com/zerok/celery-prometheus-exporter)
 and Cloud Level [https://docs.aws.amazon.com/AWSEC2/latest/UserGuide//monitoring_best_practices.html](https://docs.aws.amazon.com/AWSEC2/latest/UserGuide//monitoring_best_practices.html)
@@ -665,12 +668,6 @@ and Cloud Level [https://docs.aws.amazon.com/AWSEC2/latest/UserGuide//monitoring
 - Build a CI/CD pipeline for facilitating automated tests - ckeck with skaffold run .. [https://flask.palletsprojects.com/en/1.1.x/testing/](https://flask.palletsprojects.com/en/1.1.x/testing/)
 
 - Gitlab CI/CD [https://github.com/zzOzz/minikube-gitlab-tutorial/blob/master/Makefile](https://github.com/zzOzz/minikube-gitlab-tutorial/blob/master/Makefile)
-
-- DO NOT Implement asynchronous Tasks with Uvicorn and Channels [https://channels.readthedocs.io/en/latest/index.html](https://channels.readthedocs.io/en/latest/index.html), Channels still recommends Celery to use in Production for background tasks. It is only meant for websockets. 
-
-- Set Rate limits for third party api user [https://flask-limiter.readthedocs.io/en/stable/](https://flask-limiter.readthedocs.io/en/stable/)
-
-- Remove the Helm Chart from this repo and create a separate dedicated Helm repository - similar to [https://github.com/APSL/kubernetes-charts](https://github.com/APSL/kubernetes-charts)
 
 - Testing and Performance Reviews with Minikube [https://github.com/kubernetes-for-developers/kfd-flask/blob/master/src/exampleapp.py](https://github.com/kubernetes-for-developers/kfd-flask/blob/master/src/exampleapp.py)
   * [https://github.com/opentracing-contrib/python-flask](https://github.com/opentracing-contrib/python-flask)
