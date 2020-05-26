@@ -1,10 +1,10 @@
 # Flask-Nginx Base Helm Deployment
 
-This project can be used as a Helm template for building any Rest API project using Flask 
-and Nginx. It is assuming a K8s deployment in an AWS Kops cluster.
+This project can be used as a Helm template for building any Rest API project using Flask. 
+It is assuming a K8s deployment in an AWS Kops cluster.
 
-**NOTE: The actual Flask Api project is a separate project. This project's webapiservice and**
-**workerservice are meant for demonstration purposes only.**
+**NOTE: The actual Flask project would be a separate project. This project's webapiservice**
+**and workerservice are meant for demonstration purposes only.**
 
 ---
 
@@ -264,7 +264,7 @@ webapi:
   pullPolicy: IfNotPresent
   nameOverride: baseapi-dev
   envValues:
-    PYTHONPATH: "/usr/src/queue"          <-- ENABLING PYTEST TO IMPORT FROM WORKER MODULES
+    PYTHONPATH: "/usr/src/app"           <-- ENABLING PYTEST TO IMPORT MODULES
   # -c will tell supervisord to start an alternative supervisord.conf, which
   # in this case will just keep the docker alive instead of running nginx
   extraArgs:

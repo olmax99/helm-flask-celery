@@ -3,7 +3,6 @@
 {{- $servicePortWeb := .Values.webapi.service.externalPort -}}
 apiVersion: extensions/v1beta1
 kind: Ingress
-# TODO: In _helpers define "skaffold-helm.fullname" and "skaffold-helm.name"
 metadata:
   name: {{ template "basechart.name" . }}
   namespace: {{ .Values.webapi.ingress.namespace }}
@@ -24,7 +23,7 @@ spec:
         paths:
           - path: /*
             backend:
-              serviceName: {{ $serviceName }}
+              serviceName: {{ $serviceName }}-web
               servicePort: {{ $servicePortWeb }}
     {{- end -}}
     {{- if .Values.worker.flower.enabled }}
